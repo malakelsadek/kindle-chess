@@ -172,11 +172,12 @@ button:active {
 }
 
 .board {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(8, 1fr);
-  width: min(94vw, 460px);
-  height: min(94vw, 460px);
+  display: flex;
+  flex-wrap: wrap;
+  width: 94vw;
+  max-width: 460px;
+  height: 94vw;
+  max-height: 460px;
   margin: 0 auto;
   border: 3px solid var(--panel-border);
 }
@@ -186,12 +187,20 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(20px, 6.2vw, 38px);
+  width: 12.5%;
+  height: 12.5%;
+  font-size: 28px;
   cursor: pointer;
   user-select: none;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 76%;
+}
+
+@media (max-width: 380px) {
+  .square {
+    font-size: 20px;
+  }
 }
 
 .square.light {
