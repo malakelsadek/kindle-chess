@@ -1,17 +1,13 @@
 # Kindle Chess
 
-A simple chess app made for Kindle's e-ink screen. No install, no account, just open it in the browser.
+A chess website built for Kindle's e-ink browser. It's a plain HTML/CSS/JS
+page: no animations, no build step, high-contrast light and dark themes, and
+it keeps working offline once it's loaded once. You can play against a
+built-in computer opponent (with several difficulty levels) or pass the
+device between two players, and there's a puzzle mode for practicing
+tactics.
 
 ![Play screen](docs/play-light.png)
-
-## Features
-
-- Play vs computer (8 difficulty levels) or pass-and-play with a friend
-- Chess puzzles to practice tactics
-- Light and dark mode
-- Choice of piece styles
-- No animations, works well on slow e-ink screens
-- Works offline after the first load
 
 ## Screenshots
 
@@ -32,15 +28,13 @@ A simple chess app made for Kindle's e-ink screen. No install, no account, just 
 
 ## Running it
 
-No build step needed, it's just static files.
-
-```
-python -m http.server 8000
-```
-
-Then open `http://localhost:8000` (or your computer's IP, from the Kindle).
+It's just a website — there's no app to install. Open `index.html` in a
+browser, or host the folder anywhere that serves static files (GitHub
+Pages, Vercel, Netlify, etc.) and visit that URL from the Kindle's browser.
 
 ## Credits
 
 - Chess rules by [chess.js](https://github.com/jhlywa/chess.js)
 - Piece art and puzzles from [Lichess](https://lichess.org) (open licensed)
+- Inspired by [einkchess.fun](https://einkchess.fun/), another e-ink-focused
+  chess site
