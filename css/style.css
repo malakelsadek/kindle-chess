@@ -177,8 +177,10 @@ button:active {
 .board {
   display: flex;
   flex-wrap: wrap;
-  width: 96vw;
-  height: 96vw;
+  width: 94vw;
+  max-width: 460px;
+  height: 94vw;
+  max-height: 460px;
   margin: 0 auto;
   border: 3px solid var(--panel-border);
 }
@@ -193,9 +195,13 @@ button:active {
   font-size: 28px;
   cursor: pointer;
   user-select: none;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 76%;
+}
+
+.piece-img {
+  display: block;
+  width: 76%;
+  height: 76%;
+  pointer-events: none;
 }
 
 @media (max-width: 380px) {

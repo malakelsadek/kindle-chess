@@ -66,21 +66,29 @@
 
     var piece = game.get(square);
     el.classList.remove('piece-w', 'piece-b');
-    el.style.backgroundImage = '';
+    el.textContent = '';
 
-    if (!piece) {
-      el.textContent = '';
+    if (!piece) return;
+
+    el.classList.add(piece.color === 'w' ? 'piece-w' : 'piece-b');
+    var glyph = GLYPHS[piece.color][piece.type];
+
+    if (pieceSet === 'unicode') {
+      el.textContent = glyph;
       return;
     }
 
-    el.classList.add(piece.color === 'w' ? 'piece-w' : 'piece-b');
-
-    if (pieceSet === 'unicode') {
-      el.textContent = GLYPHS[piece.color][piece.type];
-    } else {
-      el.textContent = '';
-      el.style.backgroundImage = 'url(' + pieceImagePath(piece.color, piece.type) + ')';
-    }
+    /* Image piece sets fall back to the text glyph automatically if the
+       image can't be loaded, so a piece never renders as literally
+       nothing regardless of what an odd/old browser does with images. */
+    var img = document.createElement('img');
+    img.className = 'piece-img';
+    img.alt = '';
+    img.onerror = function () {
+      el.textContent = glyph;
+    };
+    img.src = pieceImagePath(piece.color, piece.type);
+    el.appendChild(img);
   }
 
   function renderAll() {
