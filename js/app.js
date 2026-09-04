@@ -44,7 +44,7 @@
   var mode = 'computer';
   var humanColor = 'w';
   var difficulty = DIFFICULTY_LEVELS['3'];
-  var pieceSet = 'staunty';
+  var pieceSet = 'unicode';
 
   /* 'play' | 'puzzle'. Settings is a separate overlay, not a third app mode —
      it never changes what the board is showing underneath. */

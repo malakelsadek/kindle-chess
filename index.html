@@ -10,12 +10,11 @@
 
 <header class="app-header">
   <h1>Kindle Chess</h1>
+  <p class="status" id="status" aria-live="polite">White to move</p>
   <button id="refresh-screen" type="button" title="Clear e-ink ghosting">Refresh</button>
 </header>
 
 <main id="app-main">
-  <p class="status" id="status" aria-live="polite">White to move</p>
-
   <div class="board" id="board"></div>
 
   <div class="promotion" id="promotion" hidden>
@@ -97,12 +96,12 @@
   <div class="setting-item">
     <div class="setting-info">
       <div class="setting-title">Piece theme</div>
-      <div class="setting-desc">Staunty (modern), Lichess (vector), or classic Unicode text glyphs.</div>
+      <div class="setting-desc">Unicode text glyphs (default, works everywhere), or vector art (Staunty, Lichess) if your browser supports it.</div>
     </div>
     <select id="pieceset-select">
-      <option value="staunty" selected>Staunty</option>
+      <option value="unicode" selected>Classic Unicode</option>
+      <option value="staunty">Staunty</option>
       <option value="cburnett">Lichess (Vector)</option>
-      <option value="unicode">Classic Unicode</option>
     </select>
   </div>
 
