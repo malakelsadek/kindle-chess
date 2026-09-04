@@ -22,7 +22,8 @@ tactics.
 ## How to use it
 
 - Tap a piece, then tap a square to move
-- Use the **Settings** button to change mode, difficulty, pieces, and theme
+- Use the **Settings** button to change mode, difficulty, pieces, theme,
+  and board markings
 - Use the **Puzzles** button to practice tactics
 - Use **Refresh** to clear screen ghosting on e-ink
 

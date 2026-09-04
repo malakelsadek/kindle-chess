@@ -7,9 +7,14 @@
   --btn-bg: #ffffff;
   --btn-bg-active: #111111;
   --btn-ink-active: #ffffff;
+
+  /* The board itself — square shades, piece ink, and the selection/check/
+     hint outline color — stays the same in both themes. Only the page
+     chrome (background, panel borders, buttons) changes with theme. */
   --sq-light: #e6e6e6;
   --sq-dark: #8f8f8f;
   --highlight: #111111;
+  --piece-ink: #111111;
 }
 
 html[data-theme="dark"] {
@@ -19,9 +24,6 @@ html[data-theme="dark"] {
   --btn-bg: #000000;
   --btn-bg-active: #f2f2f2;
   --btn-ink-active: #000000;
-  --sq-light: #9a9a9a;
-  --sq-dark: #5a5a5a;
-  --highlight: #f2f2f2;
 }
 
 * {
@@ -177,10 +179,10 @@ button:active {
 .board {
   display: flex;
   flex-wrap: wrap;
-  width: 97vw;
-  max-width: 490px;
-  height: 97vw;
-  max-height: 490px;
+  width: 94vw;
+  max-width: 470px;
+  height: 94vw;
+  max-height: 470px;
   margin: 0 auto;
   border: 3px solid var(--panel-border);
 }
@@ -221,16 +223,11 @@ button:active {
 /* Unicode piece glyphs: white pieces (U+2654-2659) are drawn hollow/outline,
    black pieces (U+265A-265F) solid/filled — that shape difference, not ink
    color, is what makes the two sides distinguishable. A single flat ink
-   color (matching the theme) keeps contrast against both square shades.
-   (-webkit-text-stroke was tried here to give pieces theme-fixed coloring,
-   but it strokes every internal contour of these glyphs — the grooves in a
-   rook, a knight's mane — not just the outer silhouette, which visually
-   floods solid pieces with light and blackens hollow ones. The Lichess SVG
-   piece sets don't have this problem since their coloring is baked into
-   the artwork, which is why they're the default.) */
+   color, fixed regardless of theme (see --piece-ink), keeps the board
+   looking identical in light and dark mode. */
 .square.piece-w,
 .square.piece-b {
-  color: var(--ink);
+  color: var(--piece-ink);
 }
 
 .square.selected {
@@ -278,7 +275,7 @@ button:active {
   left: 2px;
   bottom: 1px;
   font-size: 0.6rem;
-  color: var(--ink);
+  color: var(--piece-ink);
   opacity: 0.7;
   pointer-events: none;
 }
@@ -289,13 +286,19 @@ button:active {
   left: 2px;
   top: 1px;
   font-size: 0.6rem;
-  color: var(--ink);
+  color: var(--piece-ink);
   opacity: 0.7;
   pointer-events: none;
 }
 
 .square[data-file="a"][data-rank="1"]::before {
   content: attr(data-rank);
+}
+
+.board.no-coords .square[data-rank="1"]::before,
+.board.no-coords .square[data-file="a"]::before,
+.board.no-coords .square[data-file="a"][data-rank="1"]::before {
+  content: none;
 }
 
 .promotion {
@@ -322,9 +325,15 @@ button:active {
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   justify-content: center;
-  margin-top: 14px;
+  margin-top: 10px;
+}
+
+.actions button {
+  padding: 6px 8px;
+  min-height: 32px;
+  font-size: 0.8rem;
 }
 
 /* Briefly inverts the whole page to force an e-ink panel through a full

@@ -25,7 +25,7 @@
 
   var game = new Chess();
 
-  var boardEl, statusEl, themeToggleBtn, modeSelect, difficultySelect, sideSelect,
+  var boardEl, statusEl, themeToggleBtn, coordsToggleBtn, modeSelect, difficultySelect, sideSelect,
       pieceSetSelect, difficultyLabel, sideLabel, promotionEl, newGameBtn, undoBtn,
       appMainEl, settingsPanelEl, playActionsEl, puzzleActionsEl,
       openPuzzlesBtn, openSettingsBtn, closeSettingsBtn,
@@ -45,6 +45,7 @@
   var humanColor = 'w';
   var difficulty = DIFFICULTY_LEVELS['3'];
   var pieceSet = 'unicode';
+  var showCoords = true;
 
   /* 'play' | 'puzzle'. Settings is a separate overlay, not a third app mode —
      it never changes what the board is showing underneath. */
@@ -56,8 +57,13 @@
   var savedPlayFen = null;
   var savedPlayFlipped = false;
 
+  /* Bump this when piece assets change, so a browser/CDN that's still
+     holding an old cached copy of an image is forced to fetch fresh
+     instead of quietly reusing a broken cached response. */
+  var ASSET_VERSION = 'v3';
+
   function pieceImagePath(color, type) {
-    return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.png';
+    return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.png?' + ASSET_VERSION;
   }
 
   function updateSquare(square) {
@@ -78,17 +84,27 @@
       return;
     }
 
-    /* Image piece sets fall back to the text glyph automatically if the
-       image can't be loaded, so a piece never renders as literally
-       nothing regardless of what an odd/old browser does with images. */
+    /* Image piece sets fall back to the text glyph if the image doesn't
+       load, so a piece never renders as literally nothing. Covers both
+       an explicit error AND a browser that just silently never renders
+       it (no error fired at all) via the timeout below. */
     var img = document.createElement('img');
+    var settled = false;
+
+    var fallbackToGlyph = function () {
+      if (settled) return;
+      settled = true;
+      if (el.firstChild === img) el.textContent = glyph;
+    };
+
     img.className = 'piece-img';
     img.alt = '';
-    img.onerror = function () {
-      el.textContent = glyph;
-    };
+    img.onload = function () { settled = true; };
+    img.onerror = fallbackToGlyph;
     img.src = pieceImagePath(piece.color, piece.type);
     el.appendChild(img);
+
+    setTimeout(fallbackToGlyph, 1500);
   }
 
   function renderAll() {
@@ -630,10 +646,38 @@
     }
   }
 
+  function applyCoords(show) {
+    showCoords = show;
+    if (show) {
+      boardEl.classList.remove('no-coords');
+    } else {
+      boardEl.classList.add('no-coords');
+    }
+
+    var value = show ? 'show' : 'hide';
+    var options = coordsToggleBtn.querySelectorAll('.toggle-option');
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].getAttribute('data-value') === value) {
+        options[i].classList.add('active');
+      } else {
+        options[i].classList.remove('active');
+      }
+    }
+
+    try { localStorage.setItem('kindlechess-coords', value); } catch (e) { /* storage unavailable */ }
+  }
+
+  function initCoords() {
+    var saved = null;
+    try { saved = localStorage.getItem('kindlechess-coords'); } catch (e) { /* storage unavailable */ }
+    applyCoords(saved !== 'hide');
+  }
+
   function init() {
     boardEl = document.getElementById('board');
     statusEl = document.getElementById('status');
     themeToggleBtn = document.getElementById('theme-toggle');
+    coordsToggleBtn = document.getElementById('coords-toggle');
     modeSelect = document.getElementById('mode-select');
     difficultySelect = document.getElementById('difficulty-select');
     sideSelect = document.getElementById('side-select');
@@ -661,6 +705,12 @@
     themeToggleBtn.addEventListener('click', function (e) {
       var value = e.target.getAttribute('data-value');
       if (value === 'light' || value === 'dark') applyTheme(value);
+    });
+
+    initCoords();
+    coordsToggleBtn.addEventListener('click', function (e) {
+      var value = e.target.getAttribute('data-value');
+      if (value === 'show' || value === 'hide') applyCoords(value === 'show');
     });
 
     difficulty = DIFFICULTY_LEVELS[difficultySelect.value] || difficulty;

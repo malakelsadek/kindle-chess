@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Kindle Chess</title>
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
@@ -95,6 +95,17 @@
 
   <div class="setting-item">
     <div class="setting-info">
+      <div class="setting-title">Board markings</div>
+      <div class="setting-desc">Rank/file letters and numbers around the board edge.</div>
+    </div>
+    <div class="toggle-switch" id="coords-toggle">
+      <button type="button" class="toggle-option" data-value="show">Show</button>
+      <button type="button" class="toggle-option" data-value="hide">Hide</button>
+    </div>
+  </div>
+
+  <div class="setting-item">
+    <div class="setting-info">
       <div class="setting-title">Piece theme</div>
       <div class="setting-desc">Unicode text glyphs (default, works everywhere), or vector art (Staunty, Lichess) if your browser supports it.</div>
     </div>
@@ -108,9 +119,9 @@
   <button id="close-settings" type="button" class="close-settings">Done</button>
 </section>
 
-<script src="js/chess.js"></script>
-<script src="js/ai.js"></script>
-<script src="data/puzzles.js"></script>
-<script src="js/app.js"></script>
+<script src="js/chess.js?v=3"></script>
+<script src="js/ai.js?v=3"></script>
+<script src="data/puzzles.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 </body>
 </html>
