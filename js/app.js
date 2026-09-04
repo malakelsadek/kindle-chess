@@ -57,7 +57,7 @@
   var savedPlayFlipped = false;
 
   function pieceImagePath(color, type) {
-    return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.svg';
+    return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.png';
   }
 
   function updateSquare(square) {
