@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Kindle Chess</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Kindle Chess</h1>
+  <button id="refresh-screen" type="button" title="Clear e-ink ghosting">Refresh</button>
+</header>
+
+<main id="app-main">
+  <p class="status" id="status" aria-live="polite">White to move</p>
+
+  <div class="board" id="board"></div>
+
+  <div class="promotion" id="promotion" hidden>
+    <p>Promote pawn to:</p>
+    <button type="button" data-piece="q">Queen</button>
+    <button type="button" data-piece="r">Rook</button>
+    <button type="button" data-piece="b">Bishop</button>
+    <button type="button" data-piece="n">Knight</button>
+  </div>
+
+  <section class="actions" id="play-actions">
+    <button id="new-game" type="button">New Game</button>
+    <button id="undo" type="button">Undo</button>
+    <button id="open-puzzles" type="button">Puzzles</button>
+    <button id="open-settings" type="button">Settings</button>
+  </section>
+
+  <section class="actions" id="puzzle-actions" hidden>
+    <button id="puzzle-hint" type="button">Hint</button>
+    <button id="puzzle-retry" type="button">Retry</button>
+    <button id="puzzle-next" type="button">Next Puzzle</button>
+    <button id="puzzle-back" type="button">Back to Play</button>
+  </section>
+</main>
+
+<section class="settings-panel" id="settings-panel" hidden>
+  <h2>Settings</h2>
+
+  <div class="setting-item">
+    <div class="setting-info">
+      <div class="setting-title">Theme</div>
+      <div class="setting-desc">Light or dark, both kept high-contrast for e-ink.</div>
+    </div>
+    <div class="toggle-switch" id="theme-toggle">
+      <button type="button" class="toggle-option" data-value="light">Light</button>
+      <button type="button" class="toggle-option" data-value="dark">Dark</button>
+    </div>
+  </div>
+
+  <div class="setting-item">
+    <div class="setting-info">
+      <div class="setting-title">Mode</div>
+      <div class="setting-desc">Play the built-in computer, or pass the device back and forth for local two-player.</div>
+    </div>
+    <select id="mode-select">
+      <option value="computer">Vs Computer</option>
+      <option value="twoplayer">2 Player</option>
+    </select>
+  </div>
+
+  <div class="setting-item" id="difficulty-label">
+    <div class="setting-info">
+      <div class="setting-title">Difficulty</div>
+      <div class="setting-desc">How far ahead the computer searches. Lower levels also throw in the occasional random move so they play weaker, not just slower. Ratings are rough estimates.</div>
+    </div>
+    <select id="difficulty-select">
+      <option value="1">Beginner (~500)</option>
+      <option value="2">Novice (~700)</option>
+      <option value="3">Casual (~900)</option>
+      <option value="4">Club (~1100)</option>
+      <option value="5">Intermediate (~1300)</option>
+      <option value="6" selected>Strong (~1500)</option>
+      <option value="7">Advanced (~1700)</option>
+      <option value="8">Expert (~1900)</option>
+    </select>
+  </div>
+
+  <div class="setting-item" id="side-label">
+    <div class="setting-info">
+      <div class="setting-title">You play</div>
+      <div class="setting-desc">Your side against the computer; the board flips to match.</div>
+    </div>
+    <select id="side-select">
+      <option value="w" selected>White</option>
+      <option value="b">Black</option>
+    </select>
+  </div>
+
+  <div class="setting-item">
+    <div class="setting-info">
+      <div class="setting-title">Piece theme</div>
+      <div class="setting-desc">Staunty (modern), Lichess (vector), or classic Unicode text glyphs.</div>
+    </div>
+    <select id="pieceset-select">
+      <option value="staunty" selected>Staunty</option>
+      <option value="cburnett">Lichess (Vector)</option>
+      <option value="unicode">Classic Unicode</option>
+    </select>
+  </div>
+
+  <button id="close-settings" type="button" class="close-settings">Done</button>
+</section>
+
+<footer>No network access needed after this page loads.</footer>
+
+<script src="js/chess.js"></script>
+<script src="js/ai.js"></script>
+<script src="data/puzzles.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
