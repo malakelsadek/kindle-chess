@@ -57,13 +57,15 @@
   var savedPlayFen = null;
   var savedPlayFlipped = false;
 
-  /* Bump this when piece assets change, so a browser/CDN that's still
-     holding an old cached copy of an image is forced to fetch fresh
-     instead of quietly reusing a broken cached response. */
-  var ASSET_VERSION = 'v4';
-
-  function pieceImagePath(color, type) {
-    return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.png?' + ASSET_VERSION;
+  /* Piece art for the image sets is embedded as base64 data URIs in
+     data/piece-images.js (loaded as the global PIECE_IMAGES) rather than
+     fetched as separate image files. That removes a whole class of
+     possible failure -- wrong MIME type, caching, path issues, a
+     dynamically-created <img> not loading right on some old browser --
+     since there's no network/file request for a piece image at all. */
+  function pieceImageSrc(color, type) {
+    var set = typeof PIECE_IMAGES !== 'undefined' ? PIECE_IMAGES[pieceSet] : null;
+    return set ? set[color + type.toUpperCase()] : null;
   }
 
   function updateSquare(square) {
@@ -84,10 +86,14 @@
       return;
     }
 
-    /* Image piece sets fall back to the text glyph if the image doesn't
-       load, so a piece never renders as literally nothing. Covers both
-       an explicit error AND a browser that just silently never renders
-       it (no error fired at all) via the timeout below. */
+    var src = pieceImageSrc(piece.color, piece.type);
+    if (!src) {
+      el.textContent = glyph;
+      return;
+    }
+
+    /* Still falls back to the text glyph if the image somehow doesn't
+       render, so a piece never renders as literally nothing. */
     var img = document.createElement('img');
     var settled = false;
 
@@ -101,7 +107,7 @@
     img.alt = '';
     img.onload = function () { settled = true; };
     img.onerror = fallbackToGlyph;
-    img.src = pieceImagePath(piece.color, piece.type);
+    img.src = src;
     el.appendChild(img);
 
     setTimeout(fallbackToGlyph, 1500);
