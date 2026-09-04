@@ -1,6 +1,11 @@
 /* Kindle Chess — flat, high-contrast, no animations (e-ink friendly) */
 
 :root {
+  /* Tell the browser this page handles its own theming, so it doesn't
+     apply a system/browser-level forced-dark or auto-invert filter on
+     top of the colors already set below. */
+  color-scheme: light;
+
   --bg: #ffffff;
   --ink: #111111;
   --panel-border: #111111;
@@ -18,6 +23,7 @@
 }
 
 html[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #000000;
   --ink: #f2f2f2;
   --panel-border: #f2f2f2;

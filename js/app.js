@@ -60,7 +60,7 @@
   /* Bump this when piece assets change, so a browser/CDN that's still
      holding an old cached copy of an image is forced to fetch fresh
      instead of quietly reusing a broken cached response. */
-  var ASSET_VERSION = 'v3';
+  var ASSET_VERSION = 'v4';
 
   function pieceImagePath(color, type) {
     return 'assets/pieces/' + pieceSet + '/' + color + type.toUpperCase() + '.png?' + ASSET_VERSION;
