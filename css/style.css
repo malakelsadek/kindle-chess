@@ -19,8 +19,8 @@ html[data-theme="dark"] {
   --btn-bg: #000000;
   --btn-bg-active: #f2f2f2;
   --btn-ink-active: #000000;
-  --sq-light: #8a8a8a;
-  --sq-dark: #4a4a4a;
+  --sq-light: #9a9a9a;
+  --sq-dark: #5a5a5a;
   --highlight: #f2f2f2;
 }
 
@@ -177,10 +177,10 @@ button:active {
 .board {
   display: flex;
   flex-wrap: wrap;
-  width: 94vw;
-  max-width: 460px;
-  height: 94vw;
-  max-height: 460px;
+  width: 97vw;
+  max-width: 490px;
+  height: 97vw;
+  max-height: 490px;
   margin: 0 auto;
   border: 3px solid var(--panel-border);
 }
