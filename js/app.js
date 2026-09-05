@@ -110,7 +110,10 @@
     img.src = src;
     el.appendChild(img);
 
-    setTimeout(fallbackToGlyph, 1500);
+    /* Kindle's browser is slow enough decoding base64 images that 1.5s
+       was firing before onload on real hardware, wrongly falling back
+       to the unicode glyph. Give it much more headroom. */
+    setTimeout(fallbackToGlyph, 10000);
   }
 
   function renderAll() {
