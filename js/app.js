@@ -26,10 +26,33 @@
   var game = new Chess();
 
   var boardEl, statusEl, themeToggleBtn, coordsToggleBtn, modeSelect, difficultySelect, sideSelect,
-      pieceSetSelect, difficultyLabel, sideLabel, promotionEl, newGameBtn, undoBtn,
+      pieceSetSelect, pieceSetDiagEl, difficultyLabel, sideLabel, promotionEl, newGameBtn, undoBtn,
       appMainEl, settingsPanelEl, playActionsEl, puzzleActionsEl,
       openPuzzlesBtn, openSettingsBtn, closeSettingsBtn,
       puzzleHintBtn, puzzleRetryBtn, puzzleNextBtn, puzzleBackBtn, refreshScreenBtn;
+
+  /* Temporary on-page diagnostic (no devtools on Kindle's browser) for
+     tracking down why the image piece sets fall back to unicode glyphs
+     on-device. Safe to remove once that's root-caused. */
+  var pieceImgStats = { ok: 0, error: 0, timeout: 0 };
+
+  function pieceImagesStatus() {
+    if (typeof PIECE_IMAGES === 'undefined') return 'PIECE_IMAGES: not loaded';
+    var sets = [];
+    for (var k in PIECE_IMAGES) {
+      if (!PIECE_IMAGES.hasOwnProperty(k)) continue;
+      var n = 0;
+      for (var p in PIECE_IMAGES[k]) { if (PIECE_IMAGES[k].hasOwnProperty(p)) n++; }
+      sets.push(k + ':' + n);
+    }
+    return 'PIECE_IMAGES loaded (' + sets.join(', ') + ')';
+  }
+
+  function updatePieceSetDiag() {
+    if (!pieceSetDiagEl) return;
+    pieceSetDiagEl.textContent = pieceImagesStatus() +
+      ' | img ok=' + pieceImgStats.ok + ' err=' + pieceImgStats.error + ' timeout=' + pieceImgStats.timeout;
+  }
 
   var squareEls = {};
   var selectedSquare = null;
@@ -97,23 +120,30 @@
     var img = document.createElement('img');
     var settled = false;
 
-    var fallbackToGlyph = function () {
+    var fallbackToGlyph = function (reason) {
       if (settled) return;
       settled = true;
       if (el.firstChild === img) el.textContent = glyph;
+      if (reason === 'error') pieceImgStats.error++;
+      else if (reason === 'timeout') pieceImgStats.timeout++;
+      updatePieceSetDiag();
     };
 
     img.className = 'piece-img';
     img.alt = '';
-    img.onload = function () { settled = true; };
-    img.onerror = fallbackToGlyph;
+    img.onload = function () {
+      settled = true;
+      pieceImgStats.ok++;
+      updatePieceSetDiag();
+    };
+    img.onerror = function () { fallbackToGlyph('error'); };
     img.src = src;
     el.appendChild(img);
 
     /* Kindle's browser is slow enough decoding base64 images that 1.5s
        was firing before onload on real hardware, wrongly falling back
        to the unicode glyph. Give it much more headroom. */
-    setTimeout(fallbackToGlyph, 10000);
+    setTimeout(function () { fallbackToGlyph('timeout'); }, 10000);
   }
 
   function renderAll() {
@@ -691,6 +721,7 @@
     difficultySelect = document.getElementById('difficulty-select');
     sideSelect = document.getElementById('side-select');
     pieceSetSelect = document.getElementById('pieceset-select');
+    pieceSetDiagEl = document.getElementById('pieceset-diag');
     difficultyLabel = document.getElementById('difficulty-label');
     sideLabel = document.getElementById('side-label');
     promotionEl = document.getElementById('promotion');
@@ -740,6 +771,7 @@
     });
 
     initPieceSet();
+    updatePieceSetDiag();
     pieceSetSelect.addEventListener('change', function () {
       applyPieceSet(pieceSetSelect.value);
     });
