@@ -34,10 +34,12 @@
   /* Temporary on-page diagnostic (no devtools on Kindle's browser) for
      tracking down why the image piece sets fall back to unicode glyphs
      on-device. Safe to remove once that's root-caused. */
-  var pieceImgStats = { ok: 0, error: 0, timeout: 0 };
-
-  function pieceImagesStatus() {
-    if (typeof PIECE_IMAGES === 'undefined') return 'PIECE_IMAGES: not loaded';
+  function updatePieceSetDiag() {
+    if (!pieceSetDiagEl) return;
+    if (typeof PIECE_IMAGES === 'undefined') {
+      pieceSetDiagEl.textContent = 'PIECE_IMAGES: not loaded';
+      return;
+    }
     var sets = [];
     for (var k in PIECE_IMAGES) {
       if (!PIECE_IMAGES.hasOwnProperty(k)) continue;
@@ -45,13 +47,7 @@
       for (var p in PIECE_IMAGES[k]) { if (PIECE_IMAGES[k].hasOwnProperty(p)) n++; }
       sets.push(k + ':' + n);
     }
-    return 'PIECE_IMAGES loaded (' + sets.join(', ') + ')';
-  }
-
-  function updatePieceSetDiag() {
-    if (!pieceSetDiagEl) return;
-    pieceSetDiagEl.textContent = pieceImagesStatus() +
-      ' | img ok=' + pieceImgStats.ok + ' err=' + pieceImgStats.error + ' timeout=' + pieceImgStats.timeout;
+    pieceSetDiagEl.textContent = 'PIECE_IMAGES loaded (' + sets.join(', ') + ')';
   }
 
   var squareEls = {};
@@ -104,46 +100,26 @@
     el.classList.add(piece.color === 'w' ? 'piece-w' : 'piece-b');
     var glyph = GLYPHS[piece.color][piece.type];
 
-    if (pieceSet === 'unicode') {
-      el.textContent = glyph;
-      return;
+    /* The glyph is always the base layer, even for image piece sets, and
+       is set first as a text node. The art (if any) is a plain absolutely
+       positioned <div> with a CSS background-image, appended as a second
+       child right after -- not a JS-created <img>. On Kindle's browser, a
+       dynamically-created <img> with a data: URI src never fires load or
+       error and never visibly paints, so a JS-driven load/fallback dance
+       can't detect failure at all. A background-image needs no such
+       detection: it either paints on top of the glyph (this div sits
+       later in paint order) or, if the browser can't render it, stays a
+       fully transparent box and the glyph underneath already shows
+       through untouched. */
+    el.textContent = glyph;
+
+    var src = pieceSet === 'unicode' ? null : pieceImageSrc(piece.color, piece.type);
+    if (src) {
+      var art = document.createElement('div');
+      art.className = 'piece-art';
+      art.style.backgroundImage = 'url("' + src + '")';
+      el.appendChild(art);
     }
-
-    var src = pieceImageSrc(piece.color, piece.type);
-    if (!src) {
-      el.textContent = glyph;
-      return;
-    }
-
-    /* Still falls back to the text glyph if the image somehow doesn't
-       render, so a piece never renders as literally nothing. */
-    var img = document.createElement('img');
-    var settled = false;
-
-    var fallbackToGlyph = function (reason) {
-      if (settled) return;
-      settled = true;
-      if (el.firstChild === img) el.textContent = glyph;
-      if (reason === 'error') pieceImgStats.error++;
-      else if (reason === 'timeout') pieceImgStats.timeout++;
-      updatePieceSetDiag();
-    };
-
-    img.className = 'piece-img';
-    img.alt = '';
-    img.onload = function () {
-      settled = true;
-      pieceImgStats.ok++;
-      updatePieceSetDiag();
-    };
-    img.onerror = function () { fallbackToGlyph('error'); };
-    img.src = src;
-    el.appendChild(img);
-
-    /* Kindle's browser is slow enough decoding base64 images that 1.5s
-       was firing before onload on real hardware, wrongly falling back
-       to the unicode glyph. Give it much more headroom. */
-    setTimeout(function () { fallbackToGlyph('timeout'); }, 10000);
   }
 
   function renderAll() {
